@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scoopy Poo — Premium Dog Waste Removal | Sun Valley & Twin Falls</title>
+    <meta name="description" content="Scoopy Poo offers premium dog waste removal in Sun Valley, Ketchum, and the Magic Valley. Reliable, tech-forward, and locally operated.">
+    <!-- Fonts: Righteous (retro display) + DM Sans (clean body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Righteous&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet">
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        :root {
+            --yellow: #F4C542;
+            --yellow-dark: #d9a832;
+            --teal: #2D9CDB;
+            --teal-dark: #1b7bb5;
+            --cream: #FDFBF7;
+            --brown: #3E2723;
+            --brown-light: #5D4037;
+            --white: #ffffff;
+            --gray: #6b6b6b;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+            --shadow-md: 0 8px 30px rgba(0,0,0,0.08);
+            --shadow-lg: 0 16px 48px rgba(0,0,0,0.12);
+            --radius-sm: 10px;
+            --radius-md: 18px;
+            --radius-lg: 28px;
+            --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --font-display: 'Righteous', cursive;
+            --font-body: 'DM Sans', sans-serif;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+        body {
+            font-family: var(--font-body);
+            background: var(--cream);
+            color: var(--brown);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        img { max-width:100%; display:block; }
+        a { color:inherit; text-decoration:none; }
+        button { cursor:pointer; font-family: var(--font-body); border:none; background:none; }
+
+        /* ─── Scrollbar ─── */
+        ::-webkit-scrollbar { width:6px; }
+        ::-webkit-scrollbar-track { background: var(--cream); }
+        ::-webkit-scrollbar-thumb { background: var(--brown-light); border-radius:3px; }
+
+        /* ─── Nav ─── */
+        .nav {
+            position:fixed; top:0; left:0; right:0; z-index:1000;
+            display:flex; align-items:center; justify-content:space-between;
+            padding: 0 5%;
+            height:70px;
+            background: rgba(253,251,247,0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom:1px solid rgba(62,39,35,0.08);
+            transition: background var(--transition);
+        }
+        .nav.scrolled { background: rgba(253,251,247,0.98); box-shadow: var(--shadow-sm); }
+        .logo {
+            display:flex; align-items:center; gap:10px;
+            font-family: var(--font-display);
+            font-size:1.4rem;
+            color: var(--brown);
+            letter-spacing: -0.5px;
+        }
+        .logo-icon {
+            width:36px; height:36px;
+            background: var(--yellow);
+            border-radius: 50%;
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.2rem;
+        }
+        .nav-links { display:flex; gap:2rem; align-items:center; }
+        .nav-links a {
+            font-weight:500; font-size:0.9rem;
+            color: var(--brown-light);
+            position:relative;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--teal); }
+        .nav-links a::after {
+            content:''; position:absolute; bottom:-4px; left:0;
+            width:0; height:2px; background: var(--yellow);
+            transition: width var(--transition);
+        }
+        .nav-links a:hover::after { width:100%; }
+        .nav-cta {
+            background: var(--yellow);
+            color: var(--brown);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight:700;
+            font-size:0.9rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .nav-cta:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(244,197,66,0.4); }
+        .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; }
+        .hamburger span { width:25px; height:2px; background: var(--brown); border-radius:2px; transition:0.3s; }
+        .hamburger.open span:nth-child(1){ transform: rotate(45deg) translate(5px,5px); }
+        .hamburger.open span:nth-child(2){ opacity:0; }
+        .hamburger.open span:nth-child(3){ transform: rotate(-45deg) translate(5px,-5px); }
+        @media (max-width:768px) {
+            .nav-links { display:none; }
+            .hamburger { display:flex; }
+        }
+
+        /* ─── Hero ─── */
+        .hero {
+            min-height: 100vh;
+            display:flex; align-items:center; justify-content:center;
+            text-align:center;
+            position:relative;
+            background: linear-gradient(135deg, #f9f1e1 0%, #fff 100%);
+            overflow:hidden;
+            padding: 6rem 5% 3rem;
+        }
+        .hero-content { position:relative; z-index:2; max-width:800px; }
+        .hero-badge {
+            display:inline-flex; align-items:center; gap:8px;
+            background: rgba(45,156,219,0.1); border:1px solid rgba(45,156,219,0.2);
+            padding:6px 16px; border-radius:50px;
+            font-size:0.8rem; font-weight:600;
+            color: var(--teal-dark);
+            margin-bottom:1.5rem;
+            animation: fadeUp 0.8s ease-out;
+        }
+        .hero-badge .dot { width:6px; height:6px; background: var(--teal); border-radius:50%; }
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 8vw, 5.5rem);
+            line-height: 1.1;
+            color: var(--brown);
+            margin-bottom:1.5rem;
+            animation: fadeUp 0.8s 0.1s ease-out both;
+        }
+        .hero h1 em { color: var(--yellow); font-style:normal; position:relative; }
+        .hero h1 em::after {
+            content:''; position:absolute; bottom:5px; left:0; right:0;
+            height:8px; background: var(--yellow); opacity:0.3;
+            border-radius:4px; z-index:-1;
+        }
+        .hero p {
+            font-size:1.1rem; color: #5D4037; max-width:550px;
+            margin:0 auto 2rem;
+            animation: fadeUp 0.8s 0.2s ease-out both;
+        }
+        .hero-cta {
+            display:inline-flex; align-items:center; gap:10px;
+            background: var(--brown); color: var(--yellow);
+            padding: 14px 32px; border-radius:50px;
+            font-weight:700; font-size:1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: fadeUp 0.8s 0.3s ease-out both;
+        }
+        .hero-cta:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(62,39,35,0.2); }
+        .van-animation {
+            position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+            width:280px; height:150px;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%,100% { transform:translate(-50%, 0); }
+            50% { transform:translate(-50%, -10px); }
+        }
+        @keyframes fadeUp {
+            from { opacity:0; transform: translateY(25px); }
+            to { opacity:1; transform: translateY(0); }
+        }
+
+        /* ─── How It Works ─── */
+        .steps {
+            padding: 5rem 5%;
+            background: var(--white);
+            text-align:center;
+        }
+        .steps h2 { font-family: var(--font-display); font-size:2.5rem; margin-bottom:3rem; }
+        .steps-grid {
+            display:grid; grid-template-columns: repeat(3,1fr);
+            gap:2rem; max-width:1100px; margin:0 auto;
+        }
+        .step-card {
+            background: var(--cream);
+            padding:2rem 1.5rem; border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: transform var(--transition);
+        }
+        .step-card:hover { transform: translateY(-5px); }
+        .step-num {
+            display:inline-block; width:50px; height:50px;
+            background: var(--yellow); color: var(--brown);
+            border-radius:50%; font-family: var(--font-display);
+            font-size:1.5rem; line-height:50px;
+            margin-bottom:1rem;
+        }
+        @media (max-width:768px) { .steps-grid { grid-template-columns:1fr; } }
+
+        /* ─── Pricing Calculator ─── */
+        .pricing {
+            padding: 5rem 5%;
+            background: var(--cream);
+            position:relative;
+        }
+        .pricing::before {
+            content:''; position:absolute; top:0; left:0; right:0; height:6px;
+            background: repeating-linear-gradient(90deg, var(--yellow) 0px, var(--yellow) 20px, transparent 20px, transparent 40px);
+        }
+        .pricing h2 { font-family: var(--font-display); font-size:2.5rem; text-align:center; margin-bottom:2rem; }
+        .calc-box {
+            max-width:650px; margin:0 auto;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 2.5rem;
+            border: 2px solid var(--yellow);
+        }
+        .form-group { margin-bottom:1.5rem; }
+        label { display:block; font-weight:600; margin-bottom:0.5rem; color: var(--brown-light); }
+        input, select {
+            width:100%; padding:12px 16px;
+            border:2px solid #e0dcd2; border-radius: var(--radius-sm);
+            font-family: var(--font-body); font-size:1rem;
+            background: var(--cream);
+            transition: border-color var(--transition);
+        }
+        input:focus, select:focus { outline:none; border-color: var(--teal); }
+        .quote-result {
+            background: var(--cream);
+            border-radius: var(--radius-md);
+            padding:1.5rem;
+            margin-top:1.5rem;
+            display:none;
+            text-align:center;
+            animation: fadeUp 0.4s ease-out;
+        }
+        .quote-result.active { display:block; }
+        .quote-price {
+            font-family: var(--font-display);
+            font-size:2.5rem;
+            color: var(--brown);
+        }
+        .quote-detail { color: var(--gray); font-size:0.9rem; }
+        .btn {
+            display:inline-block; padding:12px 28px;
+            background: var(--teal); color: white;
+            border-radius:50px; font-weight:700;
+            font-size:0.95rem; transition: transform 0.2s, box-shadow 0.2s;
+            margin-top:1rem;
+        }
+        .btn:hover { transform: scale(1.03); box-shadow: 0 6px 20px rgba(45,156,219,0.3); }
+        .btn-yellow { background: var(--yellow); color: var(--brown); }
+        .btn-yellow:hover { box-shadow: 0 6px 20px rgba(244,197,66,0.4); }
+
+        /* ─── Modal (Intake Form) ─── */
+        .modal-overlay {
+            position:fixed; inset:0; background: rgba(0,0,0,0.6);
+            z-index:2000; display:flex; align-items:center; justify-content:center;
+            opacity:0; pointer-events:none; transition: opacity 0.3s;
+        }
+        .modal-overlay.open { opacity:1; pointer-events:all; }
+        .modal {
+            background: var(--white); border-radius: var(--radius-lg);
+            padding:2rem; width:90%; max-width:600px; max-height:85vh;
+            overflow-y:auto; position:relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalIn 0.4s ease-out;
+        }
+        @keyframes modalIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
+        .modal-close {
+            position:absolute; top:1rem; right:1rem;
+            font-size:1.5rem; cursor:pointer; color: var(--brown);
+        }
+        .modal h3 { font-family: var(--font-display); margin-bottom:1.5rem; color: var(--brown); }
+        .dog-entry { border-left:3px solid var(--yellow); padding-left:1rem; margin:1rem 0; }
+
+        /* ─── Testimonials ─── */
+        .testimonials {
+            padding: 5rem 5%;
+            background: var(--white);
+            text-align:center;
+        }
+        .testimonial-slider {
+            max-width:700px; margin:0 auto;
+            position:relative;
+            overflow:hidden;
+        }
+        .test-card {
+            background: var(--cream);
+            padding:2rem; border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            display:none;
+            animation: fadeUp 0.5s;
+        }
+        .test-card.active { display:block; }
+        .test-text { font-style:italic; font-size:1.1rem; margin-bottom:1rem; }
+        .test-author { font-weight:600; color: var(--teal); }
+
+        /* ─── FAQ ─── */
+        .faq { padding:4rem 5%; background: var(--cream); }
+        .faq h2 { font-family: var(--font-display); font-size:2.5rem; text-align:center; margin-bottom:2rem; }
+        .accordion { max-width:800px; margin:0 auto; }
+        .acc-item { border-bottom:1px solid #e0dcd2; padding:1rem 0; }
+        .acc-q { font-weight:600; cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
+        .acc-a { max-height:0; overflow:hidden; transition: max-height 0.3s ease; color: var(--gray); }
+        .acc-a.open { max-height:200px; margin-top:0.5rem; }
+
+        /* ─── Email Signup ─── */
+        .newsletter {
+            background: linear-gradient(135deg, var(--brown) 0%, #2a1f1a 100%);
+            color: white; padding:3rem 5%; text-align:center;
+        }
+        .newsletter input {
+            padding:12px 20px; border-radius:50px; border:none;
+            width:250px; max-width:80%;
+            margin-right:10px;
+        }
+        .newsletter .btn { margin-top:0; }
+
+        /* ─── Footer ─── */
+        footer { background: var(--brown); color: rgba(255,255,255,0.7); padding:2rem 5%; text-align:center; font-size:0.9rem; }
+
+        /* ─── Hidden Products Page ─── */
+        .products-section {
+            display:none; padding:5rem 5%; background: var(--white);
+        }
+        .products-section.visible { display:block; }
+        .product-grid {
+            display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+            gap:2rem; max-width:1100px; margin:0 auto;
+        }
+        .product-card {
+            border-radius: var(--radius-lg); overflow:hidden;
+            box-shadow: var(--shadow-sm); transition: transform var(--transition);
+            background: var(--cream);
+        }
+        .product-card:hover { transform: translateY(-5px); }
+        .product-img { height:180px; background: #ddd; }
+        .product-info { padding:1.5rem; }
+        .product-price { font-weight:700; color: var(--teal); }
+
+        /* ─── Van CSS Art (simplified) ─── */
+        .van-body {
+            width:200px; height:110px; background: var(--teal);
+            border-radius: 20px 20px 10px 10px;
+            position:relative; margin:0 auto;
+        }
+        .van-body::before {
+            content:''; position:absolute; top:20px; left:0; right:0; height:25px;
+            background: var(--yellow);
+            border-top:3px solid white; border-bottom:3px solid white;
+        }
+        .van-window {
+            position:absolute; top:10px; left:20px;
+            width:40px; height:30px; background: rgba(255,255,255,0.7);
+            border-radius:8px;
+        }
+        .van-window.right { left:auto; right:20px; }
+        .van-wheel {
+            width:25px; height:25px; background: #222; border-radius:50%;
+            position:absolute; bottom:-10px;
+            border:3px solid #555;
+        }
+        .van-wheel.left { left:30px; }
+        .van-wheel.right { right:30px; }
+
+        @media (max-width:600px) {
+            .calc-box { padding:1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <header class="nav" id="navbar">
+        <a href="#" class="logo">
+            <div class="logo-icon">🐾</div> Scoopy Poo
+        </a>
+        <div class="nav-links">
+            <a href="#how">How It Works</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#faq">FAQ</a>
+            <a href="#testimonials">Reviews</a>
+            <a href="#" id="showProducts">Goodies</a>
+            <a href="#pricing" class="nav-cta">Get a Quote</a>
+        </div>
+        <div class="hamburger" id="hamburger">
+            <span></span><span></span><span></span>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge"><span class="dot"></span> Premium Dog Waste Removal — Sun Valley & Beyond</div>
+            <h1>We take the <em>crap</em><br>so you don't have to.</h1>
+            <p>Reliable, tech-savvy, and ridiculously charming. Scoopy Poo serves the Wood River Valley with a smile (and a scooper).</p>
+            <a href="#pricing" class="hero-cta">Get Your Free Estimate →</a>
+        </div>
+        <div class="van-animation">
+            <div class="van-body">
+                <div class="van-window"></div>
+                <div class="van-window right"></div>
+                <div class="van-wheel left"></div>
+                <div class="van-wheel right"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how" class="steps">
+        <h2>How Scoopy Poo Works</h2>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-num">1</div>
+                <h3>Pick Your Plan</h3>
+                <p>Choose frequency, tell us about your pups, and get an instant quote.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <h3>We Scoop</h3>
+                <p>Our uniformed team arrives on schedule, sanitizes, and leaves your yard pristine.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <h3>Enjoy Life</h3>
+                <p>No mess, no stress. Just a clean yard and happy dogs.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Calculator -->
+    <section id="pricing" class="pricing">
+        <h2>Instant Quote</h2>
+        <div class="calc-box">
+            <div class="form-group">
+                <label for="postalCode">📍 Postal / Zip Code *</label>
+                <input type="text" id="postalCode" placeholder="e.g. 83353" required>
+            </div>
+            <div class="form-group">
+                <label for="dogCount">🐕 Number of Dogs</label>
+                <select id="dogCount">
+                    <option value="1">1 dog</option>
+                    <option value="2">2 dogs</option>
+                    <option value="3">3 dogs</option>
+                    <option value="4">4 dogs</option>
+                    <option value="5">5+ dogs</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="frequency">🔄 Frequency</label>
+                <select id="frequency">
+                    <option value="twice_weekly">Twice a week</option>
+                    <option value="weekly">Once a week</option>
+                    <option value="biweekly">Every other week</option>
+                </select>
+            </div>
+            <button class="btn btn-yellow" id="calcQuote">Calculate My Quote</button>
+            <div class="quote-result" id="quoteResult">
+                <p class="quote-detail">Estimated per-visit price:</p>
+                <div class="quote-price" id="quotePrice">$0.00</div>
+                <p class="quote-detail">Monthly total (approx): <span id="monthlyTotal"></span></p>
+                <button class="btn" id="startIntake">Start Signup →</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal: Full Intake Form -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <span class="modal-close" id="closeModal">&times;</span>
+            <h3>Complete Your Signup</h3>
+            <form id="intakeForm">
+                <input type="hidden" id="selectedPlan" value="">
+                <div class="form-group">
+                    <label>First Name *</label>
+                    <input type="text" id="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label>Last Name *</label>
+                    <input type="text" id="lastName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone *</label>
+                    <input type="tel" id="phone" required>
+                </div>
+                <div class="form-group">
+                    <label>Address *</label>
+                    <input type="text" id="address" required>
+                </div>
+                <div class="form-group">
+                    <label>City *</label>
+                    <input type="text" id="city" required>
+                </div>
+                <div class="form-group">
+                    <label>State *</label>
+                    <input type="text" id="state" value="ID" required>
+                </div>
+                <div class="form-group">
+                    <label>Postal Code *</label>
+                    <input type="text" id="zipConfirm" readonly>
+                </div>
+                <div id="dogDetailsContainer"></div>
+                <div class="form-group">
+                    <label>Gate Location</label>
+                    <select id="gateLocation">
+                        <option value="left">Left side</option><option value="right">Right side</option>
+                        <option value="back">Back</option><option value="none">No gate</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Garbage Can Location</label>
+                    <select id="trashLocation">
+                        <option value="left">Left side</option><option value="right">Right side</option>
+                        <option value="garage">Garage</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>How did you hear about us?</label>
+                    <select id="heardFrom">
+                        <option value="google">Google</option><option value="friend">Friend</option>
+                        <option value="van">Saw the van</option><option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Additional Comments</label>
+                    <input type="text" id="comments">
+                </div>
+                <button type="submit" class="btn btn-yellow" style="width:100%">Submit & Proceed to Payment</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="testimonials">
+        <h2>What Our Clients Say</h2>
+        <div class="testimonial-slider" id="testSlider">
+            <div class="test-card active">
+                <p class="test-text">"Scoopy Poo is a lifesaver! Our yard has never looked this clean, and the van always makes the kids smile."</p>
+                <p class="test-author">— Jessica M., Ketchum</p>
+            </div>
+            <div class="test-card">
+                <p class="test-text">"Professional, reliable, and they even text when they're on the way. Worth every penny."</p>
+                <p class="test-author">— David L., Sun Valley</p>
+            </div>
+            <div class="test-card">
+                <p class="test-text">"As a property manager, I need a service I can trust. Scoopy Poo handles our vacation rentals flawlessly."</p>
+                <p class="test-author">— Karen S., Hailey</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="faq">
+        <h2>Frequently Asked Questions</h2>
+        <div class="accordion">
+            <div class="acc-item"><div class="acc-q">Are you insured? <span>+</span></div><div class="acc-a">Yes, fully insured for your peace of mind.</div></div>
+            <div class="acc-item"><div class="acc-q">What if my dog is in the yard? <span>+</span></div><div class="acc-a">We ask that dogs be kept inside during service for safety.</div></div>
+            <div class="acc-item"><div class="acc-q">Do you work in winter? <span>+</span></div><div class="acc-a">Absolutely! Snow or shine, we're on schedule (with occasional weather delays).</div></div>
+        </div>
+    </section>
+
+    <!-- Email Signup -->
+    <section class="newsletter">
+        <h3>Stay in the Loop</h3>
+        <p style="margin-bottom:1rem;">Get seasonal tips and special offers (no spam, we promise).</p>
+        <input type="email" id="newsEmail" placeholder="Your email">
+        <button class="btn btn-yellow" id="newsSignup">Sign Up</button>
+    </section>
+
+    <!-- Hidden Products Section -->
+    <section class="products-section" id="productsSection">
+        <h2 style="text-align:center; font-family: var(--font-display);">Pawsome Goodies</h2>
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="product-img" style="background: #f2dcc2;"></div>
+                <div class="product-info">
+                    <h4>Artisan Dog Treats</h4>
+                    <p class="product-price">$12.99/mo</p>
+                    <button class="btn btn-yellow buy-product" data-price="price_treats">Subscribe</button>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-img" style="background: #c2d4f2;"></div>
+                <div class="product-info">
+                    <h4>Luxury Dog Bed</h4>
+                    <p class="product-price">$149.99</p>
+                    <button class="btn btn-yellow buy-product" data-price="price_bed">Buy Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Scoopy Poo. Servicing Sun Valley, Ketchum, and the Magic Valley with pride.</p>
+    </footer>
+
+    <script>
+        (function() {
+            // ═══════════════ CONFIGURATION ═══════════════
+            const AIRTABLE_PAT = 'YOUR_AIRTABLE_PERSONAL_ACCESS_TOKEN'; // Replace with your token
+            const AIRTABLE_BASE_ID = 'YOUR_BASE_ID';
+            const AIRTABLE_TABLE_NAME = 'Customers';
+            const STRIPE_PUBLISHABLE_KEY = 'YOUR_STRIPE_PUBLISHABLE_KEY'; // Replace with pk_live_xxx
+            const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+
+            // Price mapping: zone-frequency-dogs -> Stripe Price ID (recurring)
+            const priceMap = {
+                'sunvalley-twice_weekly-1': 'price_123_twice1',
+                'sunvalley-weekly-1': 'price_123_week1',
+                'sunvalley-biweekly-1': 'price_123_biweek1',
+                'twinfalls-twice_weekly-1': 'price_456_twice1',
+                // ... add all combos up to 5 dogs, and for sunvalley/twinfalls zones
+                // For simplicity, we'll generate keys dynamically, but you must fill ALL.
+            };
+
+            // Zone detection by postal code prefix or specific codes
+            function getZone(postal) {
+                const code = postal.trim().toUpperCase();
+                if (code.startsWith('833') || code.startsWith('83353') || code.startsWith('83340')) return 'sunvalley'; // Blaine County
+                if (code.startsWith('83301') || code.startsWith('83303') || code.startsWith('83316') || code.startsWith('83318')) return 'twinfalls';
+                return 'other';
+            }
+
+            // Base per-visit rates for 1 dog (from our research)
+            const baseRates = {
+                sunvalley: { twice_weekly: 18.50, weekly: 24.95, biweekly: 34.00 },
+                twinfalls: { twice_weekly: 15.00, weekly: 19.95, biweekly: 27.00 },
+                other:    { twice_weekly: 16.50, weekly: 22.00, biweekly: 30.00 }
+            };
+            const extraDogRate = 4.50; // per extra dog
+
+            // ═══════════════ UI ELEMENTS ═══════════════
+            const quoteBtn = document.getElementById('calcQuote');
+            const quoteResult = document.getElementById('quoteResult');
+            const quotePriceEl = document.getElementById('quotePrice');
+            const monthlyTotalEl = document.getElementById('monthlyTotal');
+            const startIntakeBtn = document.getElementById('startIntake');
+            const modalOverlay = document.getElementById('modalOverlay');
+            const closeModal = document.getElementById('closeModal');
+            const intakeForm = document.getElementById('intakeForm');
+            const selectedPlanInput = document.getElementById('selectedPlan');
+            const zipConfirm = document.getElementById('zipConfirm');
+            const dogDetailsContainer = document.getElementById('dogDetailsContainer');
+            const showProducts = document.getElementById('showProducts');
+            const productsSection = document.getElementById('productsSection');
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.querySelector('.nav-links');
+            const newsSignup = document.getElementById('newsSignup');
+
+            let currentQuote = null; // stores {zone, frequency, dogs, perVisit, monthly, planKey}
+
+            // ═══════════════ QUOTE CALCULATION ═══════════════
+            quoteBtn.addEventListener('click', () => {
+                const postal = document.getElementById('postalCode').value.trim();
+                const dogs = parseInt(document.getElementById('dogCount').value);
+                const freq = document.getElementById('frequency').value;
+                if (!postal || postal.length < 5) {
+                    alert('Please enter a valid postal code.');
+                    return;
+                }
+                const zone = getZone(postal);
+                const rates = baseRates[zone] || baseRates.other;
+                let perVisit = rates[freq];
+                perVisit += (dogs - 1) * extraDogRate;
+                // Monthly visits approximation
+                let monthlyVisits = freq === 'twice_weekly' ? 8.66 : freq === 'weekly' ? 4.33 : 2.16;
+                const monthly = (perVisit * monthlyVisits).toFixed(2);
+                quotePriceEl.textContent = `$${perVisit.toFixed(2)}`;
+                monthlyTotalEl.textContent = `$${monthly}`;
+                quoteResult.classList.add('active');
+                currentQuote = { zone, frequency: freq, dogs, perVisit, monthly, planKey: `${zone}-${freq}-${dogs}` };
+            });
+
+            // ═══════════════ START INTAKE (MODAL) ═══════════════
+            startIntakeBtn.addEventListener('click', () => {
+                if (!currentQuote) return;
+                document.getElementById('postalCode').value && (zipConfirm.value = document.getElementById('postalCode').value);
+                selectedPlanInput.value = JSON.stringify(currentQuote);
+                // Generate dog detail fields
+                dogDetailsContainer.innerHTML = '';
+                for (let i=1; i<=currentQuote.dogs; i++) {
+                    dogDetailsContainer.innerHTML += `
+                        <div class="dog-entry">
+                            <div class="form-group"><label>Dog ${i} Name</label><input type="text" id="dogName${i}"></div>
+                            <div class="form-group"><label>Breed ${i}</label><input type="text" id="dogBreed${i}"></div>
+                            <div class="form-group"><label>Safe in yard? ${i}</label>
+                                <select id="dogSafe${i}"><option value="yes">Yes</option><option value="no">No</option></select>
+                            </div>
+                        </div>
+                    `;
+                }
+                modalOverlay.classList.add('open');
+            });
+
+            closeModal.addEventListener('click', () => modalOverlay.classList.remove('open'));
+            modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) modalOverlay.classList.remove('open'); });
+
+            // ═══════════════ INTAKE FORM SUBMISSION ═══════════════
+            intakeForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const plan = JSON.parse(selectedPlanInput.value);
+                // Gather dog data
+                const dogsData = [];
+                for (let i=1; i<=plan.dogs; i++) {
+                    dogsData.push({
+                        name: document.getElementById(`dogName${i}`)?.value || '',
+                        breed: document.getElementById(`dogBreed${i}`)?.value || '',
+                        safe: document.getElementById(`dogSafe${i}`)?.value || 'yes'
+                    });
+                }
+                const payload = {
+                    fields: {
+                        'First Name': document.getElementById('firstName').value,
+                        'Last Name': document.getElementById('lastName').value,
+                        'Email': document.getElementById('email').value,
+                        'Phone': document.getElementById('phone').value,
+                        'Address': document.getElementById('address').value,
+                        'City': document.getElementById('city').value,
+                        'State': document.getElementById('state').value,
+                        'Postal Code': document.getElementById('zipConfirm').value,
+                        'Gate Location': document.getElementById('gateLocation').value,
+                        'Trash Location': document.getElementById('trashLocation').value,
+                        'Heard From': document.getElementById('heardFrom').value,
+                        'Comments': document.getElementById('comments').value,
+                        'Plan': `${plan.frequency} - ${plan.dogs} dogs`,
+                        'Per Visit Price': plan.perVisit,
+                        'Monthly Estimate': plan.monthly,
+                        'Dogs': JSON.stringify(dogsData)
+                    }
+                };
+
+                // Send to Airtable
+                try {
+                    const res = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${AIRTABLE_PAT}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!res.ok) throw new Error('Airtable error');
+                    modalOverlay.classList.remove('open');
+                    // Redirect to Stripe Checkout
+                    const priceId = priceMap[plan.planKey] || priceMap[`${plan.zone}-${plan.frequency}-1`]; // fallback
+                    if (priceId) {
+                        stripe.redirectToCheckout({
+                            lineItems: [{ price: priceId, quantity: 1 }],
+                            mode: 'subscription',
+                            successUrl: window.location.origin + '/thank-you',
+                            cancelUrl: window.location.origin
+                        }).then(result => { if (result.error) alert(result.error.message); });
+                    } else {
+                        alert('Payment configuration missing. Please contact us.');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Submission failed. Please try again.');
+                }
+            });
+
+            // ═══════════════ TESTIMONIAL SLIDER ═══════════════
+            const testCards = document.querySelectorAll('.test-card');
+            let currentTest = 0;
+            setInterval(() => {
+                testCards[currentTest].classList.remove('active');
+                currentTest = (currentTest + 1) % testCards.length;
+                testCards[currentTest].classList.add('active');
+            }, 5000);
+
+            // ═══════════════ FAQ ACCORDION ═══════════════
+            document.querySelectorAll('.acc-q').forEach(q => {
+                q.addEventListener('click', () => {
+                    const answer = q.nextElementSibling;
+                    answer.classList.toggle('open');
+                    q.querySelector('span').textContent = answer.classList.contains('open') ? '−' : '+';
+                });
+            });
+
+            // ═══════════════ PRODUCTS TOGGLE ═══════════════
+            showProducts.addEventListener('click', (e) => {
+                e.preventDefault();
+                productsSection.classList.toggle('visible');
+            });
+            // Product buy buttons (simplified)
+            document.querySelectorAll('.buy-product').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const priceId = btn.dataset.price;
+                    stripe.redirectToCheckout({
+                        lineItems: [{ price: priceId, quantity: 1 }],
+                        mode: 'payment',
+                        successUrl: window.location.origin + '/thank-you',
+                        cancelUrl: window.location.origin
+                    }).then(result => { if (result.error) alert(result.error.message); });
+                });
+            });
+
+            // ═══════════════ EMAIL NEWSLETTER ═══════════════
+            newsSignup.addEventListener('click', () => {
+                const email = document.getElementById('newsEmail').value;
+                if (email) {
+                    fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Newsletter`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${AIRTABLE_PAT}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ fields: { 'Email': email } })
+                    }).then(() => alert('Welcome to the pack!')).catch(() => alert('Signup failed.'));
+                }
+            });
+
+            // ═══════════════ MOBILE NAV ═══════════════
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('open');
+                navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+                navLinks.style.flexDirection = 'column';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '70px';
+                navLinks.style.left = '0';
+                navLinks.style.right = '0';
+                navLinks.style.background = 'var(--cream)';
+                navLinks.style.padding = '1rem 5%';
+                navLinks.style.gap = '1rem';
+            });
+            window.addEventListener('scroll', () => {
+                document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+            });
+        })();
+    </script>
+</body>
+</html>
