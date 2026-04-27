@@ -124,30 +124,26 @@
         /* ─── Hero ─── */
         .hero {
             min-height: 110vh;
-            display:flex; align-items:center; justify-content:center;
-            text-align:center;
-            position:relative;
-            background: linear-gradient(135deg, #afc92f00 0%, #b0c92f00 100%);
-            overflow:hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            background: linear-gradient(135deg, rgba(175,201,47,0.0) 0%, rgba(176,201,47,0.0) 100%);
+            overflow: hidden;
             padding: 1rem 5% 3rem;
         }
         .hero::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    opacity: 0.5;
-    background: #b0c92f;
-    
-    background-image: url('https://static-cdn.jtvnw.net/jtv_user_pictures/ef3ca293-fb89-4cf5-a27b-03b2f59b1d7e-profile_banner-480.jpeg');
-background-size: 110%; /* try 105%–120% */
-background-repeat: no-repeat;
-background-position: center;
-
-    animation: rotate 55s linear infinite;
-}
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url('https://github.com/jonahwiz123/scoopy_doo/blob/main/pattern_compressed.jpeg?raw=true');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            opacity: 0.5;
+            pointer-events: none;
+        }
         @keyframes rotate { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
         .hero-content { position:relative; z-index:2; max-width:800px; }
         .hero-badge {
@@ -201,6 +197,87 @@ background-position: center;
         @keyframes fadeUp {
             from { opacity:0; transform: translateY(25px); }
             to { opacity:1; transform: translateY(0); }
+        }
+
+        /* ─── Featured Photo Section ─── */
+        .featured-section {
+            padding: 5rem 5%;
+            background: var(--cream);
+        }
+        .featured-container {
+            display:grid; grid-template-columns: 1fr 2fr;
+            gap:2rem; max-width:1200px; margin:0 auto;
+            align-items:stretch;
+        }
+        .featured-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding:2.5rem 2rem;
+            box-shadow: var(--shadow-md);
+            display:flex; flex-direction:column; justify-content:center;
+            border-left:6px solid var(--orange);
+            transition: transform var(--transition), box-shadow var(--transition);
+        }
+        .featured-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+        .featured-card h3 {
+            font-family: var(--font-display);
+            font-size:1.8rem;
+            color: var(--orange);
+            margin-bottom:1rem;
+        }
+        .featured-card p {
+            color: var(--gray);
+            margin-bottom:1.5rem;
+            line-height:1.8;
+        }
+        .featured-card .badge {
+            display:inline-block;
+            background: var(--lime);
+            color: var(--brown);
+            padding:6px 14px;
+            border-radius:20px;
+            font-weight:700;
+            font-size:0.85rem;
+            margin-bottom:1rem;
+        }
+        .featured-card .cta-btn {
+            background: var(--teal);
+            color: white;
+            padding:12px 24px;
+            border-radius:50px;
+            font-weight:700;
+            text-align:center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(40,176,172,0.3);
+            align-self:flex-start;
+        }
+        .featured-card .cta-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 18px rgba(40,176,172,0.4);
+        }
+        .featured-image {
+            border-radius: var(--radius-lg);
+            overflow:hidden;
+            box-shadow: var(--shadow-lg);
+            height:100%;
+            min-height:400px;
+        }
+        .featured-image img {
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            display:block;
+        }
+        @media (max-width:768px) {
+            .featured-container {
+                grid-template-columns:1fr;
+            }
+            .featured-image {
+                min-height:300px;
+            }
         }
 
         /* ─── Secret Sauce Section ─── */
@@ -464,13 +541,7 @@ background-position: center;
         .van-wheel.right { right:30px; }
 
         /* Mobile adjustment */
-@media (max-width: 768px) {
-    .hero::before {
-        background-size: 2000px;  /* controls tile size */
-        background-repeat: repeat;
-        background-position: center; /* ~1.5x more than 110% */
-    }
-}
+
 
         @media (max-width:600px) {
             .quote-box { padding:1.5rem; }
@@ -482,7 +553,8 @@ background-position: center;
     <!-- Navigation -->
     <header class="nav" id="navbar">
         <a href="#" class="logo">
-            <div class="logo-icon">🐾</div> Scoopy-Doo!
+            <img src="https://github.com/jonahwiz123/scoopy_doo/blob/main/scoopy-doo_compressed.png?raw=true" alt="Scoopy-Doo! logo" style="height:36px; width:auto; border-radius:12px;">
+            Scoopy-Doo!
         </a>
         <div class="nav-links">
             <a href="#how">How It Works</a>
@@ -503,7 +575,7 @@ background-position: center;
             <div class="hero-badge"><span class="dot"></span> Premium Dog Waste Removal — Sun Valley & Twin Falls</div>
             <h1>We take the <em>crap</em><br>so you don't have to.</h1>
             <p>Reliable, tech-savvy, and ridiculously charming. Scoopy-Doo! serves the Wood River Valley with a smile (and a scooper).</p>
-            <a href="#quote" class="hero-cta">Get Your Free Estimate →</a>
+            <a href="#quote" class="hero-cta">Get Your<i>Instant Free</i>Estimate →</a>
         </div>
         <div class="van-animation">
             <div class="van-body">
@@ -515,7 +587,22 @@ background-position: center;
         </div>
     </section>
 
-    <!-- Why Scoopy Poo? Secret Sauce -->
+    <!-- Featured Photo Section -->
+    <section class="featured-section">
+        <div class="featured-container">
+            <div class="featured-card">
+                <span class="badge">✨ Our Services</span>
+                <h3>Fresh Yard Awaits</h3>
+                <p>Experience the difference a clean, well-maintained yard can make. Our expert team handles every detail with care and professionalism, leaving your space pristine every single time.</p>
+                <a href="#quote" class="cta-btn">Schedule Now</a>
+            </div>
+            <div class="featured-image">
+                <img src="https://github.com/jonahwiz123/scoopy_doo/blob/main/scoopy_van_compressed.png?raw=true" alt="Fresh, clean yard after Scoopy-Doo! service">
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Scoopy-Doo!? Secret Sauce -->
     <section class="sauce" id="why">
         <h2>What Makes Us Groovy?</h2>
         <div class="sauce-grid">
@@ -527,12 +614,12 @@ background-position: center;
             <div class="sauce-card">
                 <div class="sauce-icon">🦸</div>
                 <h3>Kindness & Expertise</h3>
-                <p>We treat your home and pets like our own. Friendly, professional, and always with a smile!</p>
+                <p>We treat your home and pets like our own. Friendly, professional, and always with a smile (under the mask).</p>
             </div>
             <div class="sauce-card">
                 <div class="sauce-icon">🗑️</div>
                 <h3>Litter Patrol</h3>
-                <p>We pick up any stray litter or garbage we spot — it’s our little extra. We’ll even alert you to fence issues or safety hazards.</p>
+                <p>Ruh-Roh! 🚯 We pick up any stray litter or garbage we spot — it’s our little extra. We’ll even alert you to fence issues or safety hazards.</p>
             </div>
         </div>
     </section>
@@ -700,7 +787,7 @@ background-position: center;
         <h2>What Our Clients Say</h2>
         <div class="testimonial-slider" id="testSlider">
             <div class="test-card active">
-                <p class="test-text">"Scoopy Doo is a lifesaver! Our yard has never looked this clean, and the van always makes the kids smile."</p>
+                <p class="test-text">"Scoopy-Doo! is a lifesaver! Our yard has never looked this clean, and the van always makes the kids smile."</p>
                 <p class="test-author">— Jessica M., Ketchum</p>
             </div>
             <div class="test-card">
@@ -779,7 +866,7 @@ background-position: center;
             const basePrices = {
                 weekly: 24.95,
                 twice_weekly: 18.50,
-                biweekly: 34.00
+                biweekly: 37.50
             };
             const extraDogRate = 10.00;
 
